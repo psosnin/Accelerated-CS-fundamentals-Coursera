@@ -68,6 +68,18 @@ PNG grayscale(PNG image) {
  */
 PNG createSpotlight(PNG image, int centerX, int centerY) {
 
+  for (unsigned x = 0; x < image.width(); x++) {
+      for (unsigned y = 0; y < image.height(); y++) {
+        HSLAPixel & pixel = image.getPixel(x, y);
+        double l = pixel.l;
+        pixel.l = max((1 - (sqrt(pow((centerX-int(x)),2) + pow((centerY-int(y)),2)))*0.005), 0.2) * l;
+        // `pixel` is a reference to the memory stored inside of the PNG `image`,
+        // which means you're changing the image directly. No need to `set`
+        // the pixel since you're directly changing the memory of the image.
+      }
+    }
+
+
   return image;
   
 }
@@ -84,7 +96,20 @@ PNG createSpotlight(PNG image, int centerX, int centerY) {
  * @return The illinify'd image.
 **/
 PNG illinify(PNG image) {
-
+  for (unsigned x = 0; x < image.width(); x++) {
+      for (unsigned y = 0; y < image.height(); y++) {
+        HSLAPixel & pixel = image.getPixel(x, y);
+        if (pixel.h < 113 || pixel.h > 293) {
+          pixel.h = 11;
+        }
+        else {
+          pixel.h = 216;
+        }
+        // `pixel` is a reference to the memory stored inside of the PNG `image`,
+        // which means you're changing the image directly. No need to `set`
+        // the pixel since you're directly changing the memory of the image.
+      }
+    }
   return image;
 }
  
@@ -102,6 +127,21 @@ PNG illinify(PNG image) {
 * @return The watermarked image.
 */
 PNG watermark(PNG firstImage, PNG secondImage) {
+  for (unsigned x = 0; x < firstImage.width(); x++) {
+      for (unsigned y = 0; y < firstImage.height(); y++) {
+        HSLAPixel & firstpixel = firstImage.getPixel(x, y);
+        HSLAPixel & secondpixel = secondImage.getPixel(x,y);
+        if (secondpixel.l == 1.0) {
+          if (firstpixel.l < 0.8) {
+            firstpixel.l = firstpixel.l + 0.2;
+          }
+          else {
+            firstpixel.l = 1.0;
+          }          
+        }
+        
 
+      }
+    }
   return firstImage;
 }
