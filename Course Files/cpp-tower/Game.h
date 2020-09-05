@@ -21,4 +21,5 @@ class Game {
 
   private:
     std::vector<Stack> stacks_;
+    void _move(int size, int start, int end);
 };

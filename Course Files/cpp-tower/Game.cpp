@@ -15,7 +15,7 @@ using std::cout;
 using std::endl;
 
 // Solves the Tower of Hanoi puzzle.
-void Game::move(int size, int start, int end) {
+void Game::_move(int size, int start, int end) {
   if (size == 0) {
   }
   if (size == 1){
@@ -23,16 +23,16 @@ void Game::move(int size, int start, int end) {
   }
   else {
     int spare = (3 - start - end);
-    move(size - 1, start, spare);
-    move(1, start, end);
-    move(size - 1, spare, end);
+    _move(size - 1, start, spare);
+    _move(1, start, end);
+    _move(size - 1, spare, end);
   }
   cout << *this << endl;
 }
 // (Feel free to call "helper functions" to help you solve the puzzle.)
 void Game::solve() {
   // Prints out the state of the game:
-  move(4,0,2);
+  _move(4,0,2);
   cout << *this << endl;
 }
 
