@@ -15,12 +15,25 @@ using std::cout;
 using std::endl;
 
 // Solves the Tower of Hanoi puzzle.
+void Game::move(int size, int start, int end) {
+  if (size == 0) {
+  }
+  if (size == 1){
+    stacks_[end].push_back(stacks_[start].removeTop());
+  }
+  else {
+    int spare = (3 - start - end);
+    move(size - 1, start, spare);
+    move(1, start, end);
+    move(size - 1, spare, end);
+  }
+  cout << *this << endl;
+}
 // (Feel free to call "helper functions" to help you solve the puzzle.)
 void Game::solve() {
   // Prints out the state of the game:
+  move(4,0,2);
   cout << *this << endl;
-
-  // @TODO -- Finish solving the game!
 }
 
 // Default constructor to create the initial state:

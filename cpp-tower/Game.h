@@ -14,6 +14,7 @@ class Game {
   public:
     Game();
     void solve();
+    void move(int size, int start, int end);
 
     // An overloaded operator<<, allowing us to print the stack via `cout<<`:
     friend std::ostream& operator<<(std::ostream & os, const Game & game);
