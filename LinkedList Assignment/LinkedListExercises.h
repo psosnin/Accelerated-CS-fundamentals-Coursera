@@ -80,7 +80,41 @@
 
 template <typename T>
 void LinkedList<T>::insertOrdered(const T& newData) {
-
+    Node* newNode = new Node(newData);
+    Node* cur = head_;
+    size_ = size_ + 1;
+    //Insert into empty list
+    if (size_ == 1) {
+      head_ = newNode;
+      tail_ = newNode;
+      return ;
+    }
+    Node* next = cur->next;
+    //or insert at start of list
+    if (cur->data > newNode-> data) {
+      head_ = newNode;
+      newNode->prev = nullptr;
+      newNode->next = cur;
+      cur->prev = newNode;
+      return ;
+    }
+    // Or loop through list and insert at correct place
+    while (cur->next) {
+      if (next->data > newNode->data) {
+        cur->next = newNode;
+        newNode->prev = cur;
+        newNode->next = next;
+        next->prev = newNode;
+        return ;
+      }
+      cur = next;
+      next = cur->next;
+    }
+    //or insert at end of the list
+    cur->next = newNode;
+    newNode->prev = cur;
+    tail_ = newNode;
+  }
   // -----------------------------------------------------------
   // TODO: Your code here!
   // -----------------------------------------------------------
@@ -128,7 +162,7 @@ void LinkedList<T>::insertOrdered(const T& newData) {
   // to update all next, prev, head_, and tail_ pointers as needed on your
   // new node or on those existing nodes that are adjacent to the new node.
 
-}
+
 
 /********************************************************************
   Exercise 2: Linear-time Merge
@@ -213,16 +247,46 @@ LinkedList<T> LinkedList<T>::merge(const LinkedList<T>& other) const {
   // "other" refers to the list that was passed as an argument:
   LinkedList<T> left = *this;
   LinkedList<T> right = other;
-
+  Node* cur_left = left.getHeadPtr();
+  Node* cur_right = right.getHeadPtr();
+  if (left.size_ == 0) {return right;}
+  if (right.size_== 0) {return left;}
+  Node* next_left = cur_left->next;
+  Node* next_right = cur_right->next;
   // So if this function was called as "A.merge(B)", then now, "left"
   // is a temporary copy of the "A" and "right" is a temporary copy
   // of the "B".
-  
   // We will also create an empty list called "merged" where we can build
   // the final result we want. This is what we will return at the end of
   // the function.
   LinkedList<T> merged;
-
+  while (cur_left || cur_right) {
+    if (!cur_left) {
+      merged.pushBack(cur_right->data);
+      cur_right = next_right;
+      if (cur_right) {next_right = cur_right->next;}
+      else {cur_right = nullptr;}
+      
+    }
+    else if (!cur_right) {
+      merged.pushBack(cur_left->data);
+      cur_left = next_left;
+      if (cur_left) {next_left = cur_left->next;}
+      else {cur_left = nullptr;}
+    }
+    else if (cur_left->data < cur_right->data) {
+      merged.pushBack(cur_left->data);
+      cur_left = next_left;
+      if (cur_left) {next_left = cur_left->next;}
+      else {cur_left = nullptr;}
+    }
+    else {
+      merged.pushBack(cur_right->data);
+      cur_right = next_right;
+      if (cur_right) {next_right = cur_right->next;}
+      else {cur_right = nullptr;}
+    }
+  }
   // -----------------------------------------------------------
   // TODO: Your code here!
   // -----------------------------------------------------------
