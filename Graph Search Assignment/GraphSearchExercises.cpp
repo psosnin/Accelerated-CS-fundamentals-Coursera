@@ -16,7 +16,7 @@
 // where you need to edit some code in particular.
 
 #include "GraphSearchCommon.h"
-
+#include <set>
 // =========================================================================
 // EXERCISE 1: Adjacency List Utilities
 //
@@ -47,13 +47,32 @@
 // GridGraph::printDetails in GridGraph.h shows another method, by constructing
 // a set of the unique edges only.
 int GridGraph::countEdges() const {
-  int numEdges = 0;
-
+  std::set <IntPairPair> edgelist; 
+  for (const auto& kv : adjacencyMap) {
+    // key: point
+    const auto& p1 = kv.first;
+    // value: neighbor point set
+    const auto& p1_neighbors = kv.second;
+    if (!p1_neighbors.empty()) {
+      for (const auto& p2 : p1_neighbors) {
+        if (p1 < p2) {
+          IntPairPair edge = std::make_pair(p1,p2);
+          edgelist.insert(edge);
+        }
+        else {
+          IntPairPair edge = std::make_pair(p2,p1);
+          edgelist.insert(edge);
+        }
+        
+      }
+      
+    }
+  }
   // =======================================================================
   // TODO: Your code here!
   // =======================================================================
 
-  return numEdges;
+  return edgelist.size();
 }
 
 // GridGraph::removePoint:
@@ -88,7 +107,10 @@ void GridGraph::removePoint(const IntPair& p1) {
   // of small pieces of data like this.)
 
   const GridGraph::NeighborSet originalNeighbors = adjacencyMap.at(p1);
-
+  for (const auto& p2 : originalNeighbors) {
+    adjacencyMap.at(p2).erase(p1);
+  }
+  adjacencyMap.erase(p1);
   // =======================================================================
   // TODO: Your code here!
   // =======================================================================
@@ -171,7 +193,7 @@ std::list<IntPair> graphBFS(const IntPair& start, const IntPair& goal, const Gri
   // We'll hard-code a maximum distance for any shortest path through the graph
   // that we will consider before giving up. This isn't strictly necessary for
   // BFS to be correct; when a path can be found from start to goal, we'll find
-  // the shortest such path and we won't alwaysneed to visit all of the vertices
+  // the shortest such path and we won't always need to visit all of the vertices
   // before that happens anyway. But suppose the goal is unreachable from start;
   // then if the graph has a very large number of vertices, an unrestricted BFS
   // algorithm would have to explore all the reachable vertices before giving up
@@ -295,7 +317,7 @@ std::list<IntPair> graphBFS(const IntPair& start, const IntPair& goal, const Gri
     // TODO: Your code here!
     // We'll need to loop over the neighbors that are the points adjacent to curPoint.
     // Get a copy of the set of neighbors we're going to loop over.
-    GridGraph::NeighborSet neighbors; // Change this...
+    GridGraph::NeighborSet neighbors = graph.adjacencyMap.at(curPoint); // Change this...
     // =====================================================================
 
     for (auto neighbor : neighbors) {
@@ -303,14 +325,14 @@ std::list<IntPair> graphBFS(const IntPair& start, const IntPair& goal, const Gri
       // ==================================================================
       // TODO: Your code here!
       // Check whether the neighbor has already been visited.
-      bool neighborWasAlreadyVisited = false; // Change this...
+      bool neighborWasAlreadyVisited = visitedSet.count(neighbor); // Change this...
       // ==================================================================
 
       // If this adjacent vertex has NOT been visited before, we will visit it now.
       // If it HAS been visited before, we do nothing and continue to loop.
       // This way, we avoid enqueueing the same vertex more than once.
       if (!neighborWasAlreadyVisited) {
-
+          
         // ================================================================
         // TODO: Your code here!
 
@@ -318,13 +340,13 @@ std::list<IntPair> graphBFS(const IntPair& start, const IntPair& goal, const Gri
         // since curPoint has just led to the discovery of this neighbor for
         // the first time.
         // ...
-
+          pred[neighbor] = curPoint;
         // Add neighbor to the visited set.
         // ...
-
+          visitedSet.insert(neighbor);
         // Push neighbor into the exploration queue.
         // ...
-
+          exploreQ.push(neighbor);
         // ================================================================
 
         // Check if we've taken too many steps so far.
@@ -511,21 +533,20 @@ std::list<PuzzleState> puzzleBFS(const PuzzleState& start, const PuzzleState& go
     // We'll need to loop over the neighbors that are the points adjacent to curState.
     // We need a collection of neighbors we're going to loop over.
     
-    auto neighbors = {start}; // Change this! This line is totally wrong.
-
+    auto neighbors = curState.getAdjacentStates();// Change this! This line is totally wrong.
+    
     // Hint: Look at PuzzleState.h
     // =====================================================================
 
     for (auto neighbor : neighbors) {
-
+      
       // ==================================================================
       // TODO: Your code here!
       // Check whether the neighbor has already been visited.
-      bool neighborWasAlreadyVisited = false; // Change this...
+      bool neighborWasAlreadyVisited = visitedSet.count(neighbor); // Change this...
       // ==================================================================
-
       if (!neighborWasAlreadyVisited) {
-
+        
         // ================================================================
         // TODO: Your code here!
 
@@ -533,13 +554,13 @@ std::list<PuzzleState> puzzleBFS(const PuzzleState& start, const PuzzleState& go
         // since curState has just led to the discovery of this neighbor for
         // the first time.
         // ...
-
+          pred[neighbor] = curState;
         // Add neighbor to the visited set.
         // ...
-
+          visitedSet.insert(neighbor);
         // Push neighbor into the exploration queue.
         // ...
-
+          exploreQ.push(neighbor);
         // ================================================================
 
         dist[neighbor] = dist[curState]+1;
